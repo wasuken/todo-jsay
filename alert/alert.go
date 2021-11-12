@@ -1,7 +1,10 @@
 package alert
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,8 +25,49 @@ func GetAlertMap() *map[string]IntervalAlert {
 	return &alertMap
 }
 
-// 本日中に期限を迎えるアラートのリストを返却する
-func ListTodayAlert() {
+func exists(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
+}
+
+func touchHistFile(path string) {
+	if exists(path) {
+		f, er := os.Create(path)
+		if er != nil {
+			panic(er)
+		}
+		w := csv.NewWriter(f)
+		header := []string{"title", "interval_second", "count", "created_at"}
+		if err := w.Write(header); err != nil {
+			panic(err)
+		}
+		w.Flush()
+		f.Close()
+	}
+}
+func (ia IntervalAlert) toHistRow() []string {
+	t := time.Now()
+	s := ""
+	s = t.String()
+	return []string{ia.Title, strconv.Itoa(ia.Interval_second), strconv.Itoa(ia.Count), s}
+}
+
+func WriteAlertHist(alt IntervalAlert) {
+	path := "./hist.csv"
+	touchHistFile(path)
+
+	f, er := os.Open(path)
+	if er != nil {
+		panic(er)
+	}
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	header := []string{"title", "interval_second", "count", "created_at"}
+	if err := w.Write(header); err != nil {
+		panic(err)
+	}
+	w.Flush()
 }
 
 // アラートを実行する

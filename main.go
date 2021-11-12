@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strconv"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wasuken/todo-jsay/alert"
@@ -33,6 +33,7 @@ func main() {
 		}
 		go func() {
 			alt := alert.IntervalAlert{Title: title, Interval_second: interval_second, Count: count}
+			alert.WriteAlertHist(alt)
 			alert.AddAlert(alt)
 		}()
 
