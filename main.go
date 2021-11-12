@@ -8,17 +8,17 @@ import (
 	"github.com/wasuken/todo-jsay/alert"
 )
 
-type AlertJsonResponse struct{
-	Data []alert.IntervalAlert `json:"data"`
-	Status int `json:"status"`
-	Msg string `json:"msg"`
+type AlertJsonResponse struct {
+	Data   []alert.IntervalAlert `json:"data"`
+	Status int                   `json:"status"`
+	Msg    string                `json:"msg"`
 }
 
 func main() {
 	r := gin.Default()
 	r.Static("/assets", "./public/assets/")
 	r.LoadHTMLGlob("public/*.html")
-	r.GET("/", func(c *gin.Context){
+	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 	r.POST("/api/alert", func(c *gin.Context) {
@@ -31,23 +31,22 @@ func main() {
 		if e != nil {
 			panic(e)
 		}
+		alt := alert.IntervalAlert{Title: title, Interval_second: interval_second, Count: count}
+		alert.WriteAlertHist(alt)
 		go func() {
-			alt := alert.IntervalAlert{Title: title, Interval_second: interval_second, Count: count}
-			alert.WriteAlertHist(alt)
 			alert.AddAlert(alt)
 		}()
-
 	})
-	r.GET("/api/alert", func(c *gin.Context){
+	r.GET("/api/alert", func(c *gin.Context) {
 		mp := *alert.GetAlertMap()
 		rst := []alert.IntervalAlert{}
 		for _, alt := range mp {
 			rst = append(rst, alt)
 		}
 		data := AlertJsonResponse{
-			Data: rst,
+			Data:   rst,
 			Status: 200,
-			Msg: "",
+			Msg:    "",
 		}
 		c.JSON(http.StatusOK, data)
 	})

@@ -31,7 +31,7 @@ func exists(filename string) bool {
 }
 
 func touchHistFile(path string) {
-	if exists(path) {
+	if !exists(path) {
 		f, er := os.Create(path)
 		if er != nil {
 			panic(er)
@@ -45,7 +45,7 @@ func touchHistFile(path string) {
 		f.Close()
 	}
 }
-func (ia IntervalAlert) toHistRow() []string {
+func (ia IntervalAlert) ToHistRow() []string {
 	t := time.Now()
 	s := ""
 	s = t.String()
@@ -56,15 +56,14 @@ func WriteAlertHist(alt IntervalAlert) {
 	path := "./hist.csv"
 	touchHistFile(path)
 
-	f, er := os.Open(path)
+	f, er := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if er != nil {
 		panic(er)
 	}
 	defer f.Close()
 
 	w := csv.NewWriter(f)
-	header := []string{"title", "interval_second", "count", "created_at"}
-	if err := w.Write(header); err != nil {
+	if err := w.Write(alt.ToHistRow()); err != nil {
 		panic(err)
 	}
 	w.Flush()
