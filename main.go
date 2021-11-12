@@ -16,6 +16,11 @@ type AlertJsonResponse struct{
 
 func main() {
 	r := gin.Default()
+	r.Static("/", "./public")
+	r.LoadHTMLGlob("public/*.html")
+	r.GET("/", func(c *gin.Context){
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
 	r.POST("/api/alert", func(c *gin.Context) {
 		title := c.PostForm("title")
 		interval_second, err := strconv.Atoi(c.PostForm("interval"))
