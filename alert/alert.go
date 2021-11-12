@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/wasuken/todo-jsay/openjtalk"
 	"github.com/google/uuid"
+	"github.com/wasuken/todo-jsay/openjtalk"
 )
 
 type IntervalAlert struct {
-	Title            string
-	Interval_second int
-	Count            int
+	Title           string `json:"title"`
+	Interval_second int    `json:"interval_second"`
+	Count           int    `json:"count"`
 }
 
 var alertMap map[string]IntervalAlert
 
 // 設定されたアラートリストを返却する
-func GetAlertMap() (*map[string]IntervalAlert) {
+func GetAlertMap() *map[string]IntervalAlert {
 	// アラートファイルを読み込む
 	return &alertMap
 }
@@ -31,7 +31,7 @@ func AddAlert(alt IntervalAlert) {
 	if alt.Count <= 0 {
 		return
 	}
-	if alertMap == nil{
+	if alertMap == nil {
 		alertMap = map[string]IntervalAlert{}
 	}
 	ticker := time.NewTicker(time.Duration(1) * time.Second)
