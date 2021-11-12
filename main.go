@@ -16,7 +16,7 @@ type AlertJsonResponse struct{
 
 func main() {
 	r := gin.Default()
-	r.Static("/", "./public")
+	r.Static("/assets", "./public/assets/")
 	r.LoadHTMLGlob("public/*.html")
 	r.GET("/", func(c *gin.Context){
 		c.HTML(http.StatusOK, "index.html", gin.H{})
